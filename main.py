@@ -176,6 +176,8 @@ class Application(tkinter.Frame):
     #     # print(self.howManyYouWantToFind.get())
 
     def startFun(self):
+        self.coffre_twitch.howManyDontFind = 0
+        self.coffre_twitch.countFind = 0
         if (self.coffre_twitch.breakWhile == False):
             self.errorText["text"] = "Already in work"
             print("Already in work")
