@@ -25,9 +25,9 @@ class Coffre_twitch():
         # async_loop.run_forever(self.run())
         async_loop.run_until_complete(self.run())
 
-    def _asyncio_thread_stop(self, async_loop):
-        async_loop.stop()
-        async_loop.close()
+    # def _asyncio_thread_stop(self, async_loop):
+    #     async_loop.stop()
+    #     async_loop.close()
 
     def setHowManyYouWantToFind(self, howManyYouWantToFind_):
         try:
@@ -95,6 +95,27 @@ class Application(tkinter.Frame):
         self.async_loop = asyncio.get_event_loop()
         self.clock()
         self.myTask = None
+    
+    # def __del__(self):
+    #     # sefl.coffre_twitch.__del__()
+    #     print("__del__ call")
+    #     print("old breakWhile = ", self.coffre_twitch.breakWhile)
+    #     self.coffre_twitch.breakWhile = True
+    #     print("new breakWhile = ", self.coffre_twitch.breakWhile)
+    #     if (self.myTask != None):
+    #         if (self.myTask.is_alive() == True):
+    #             self.async_loop.stop()
+    #             self.myTask.join()
+    #             # self.myTask._stop()
+    #     # sefl.endFun()
+
+    def on_delete(self):
+        self.coffre_twitch.breakWhile = True
+        if (self.myTask != None):
+            if (self.myTask.is_alive() == True):
+                self.async_loop.stop()
+                self.myTask.join()
+        self.master.destroy()
 
     def create_widgets(self):
         # self.labelHello = tkinter.Label(self, text="Auto Click Coffre", font=("Arial Bold", 30))
@@ -107,7 +128,7 @@ class Application(tkinter.Frame):
         tryLeft_var.set(str(self.coffre_twitch.howManyYouWantToFind - self.coffre_twitch.countFind))
         # self.master.update_idletasks()
 
-        self.labelText = tkinter.Label(self, text="Number : ", font=("Arial Bold", 15))
+        self.labelText = tkinter.Label(self, text="Number (int) : ", font=("Arial Bold", 15))
         self.labelText.grid(sticky=tkinter.W)
 
         self.entryText = tkinter.Entry(self, width=20)
@@ -188,6 +209,8 @@ class Application(tkinter.Frame):
             self.actualStatusText["text"] = "Work"
             self.coffre_twitch.breakWhile = False
             print("succefully set")
+            # if (self.async_loop.is_closed()):
+            #     self.async_loop = ge
             self.myTask = threading.Thread(target=self.coffre_twitch._asyncio_thread, args=(self.async_loop,))
             self.myTask.start()
             # asyncio.run(self.coffre_twitch.run())
@@ -205,13 +228,18 @@ class Application(tkinter.Frame):
         # self.myTask.daemon = False
         # self.myTask._delete()
         self.coffre_twitch.breakWhile = True
+        if (self.myTask != None):
+            if (self.myTask.is_alive() == True):
+                self.async_loop.stop()
+                self.myTask.join()
+                self.myTask._stop()
         # self.coffre_twitch._asyncio_thread_stop(self.async_loop)
         # self.myTask.join()
         # del self.myTask
         # sys.exit()
         # raise KeyboardInterrupt
 
-if __name__ == "__main__":
+def main():
     # if (len(sys.argv) == 2):
     #     coffre_twitch(int(sys.argv[1])).main()
     # else:
@@ -219,5 +247,9 @@ if __name__ == "__main__":
 
     root = tkinter.Tk()
     app = Application(master=root)
+    root.protocol("WM_DELETE_WINDOW", app.on_delete)
     app.mainloop()
     # app.update_idletasks()
+
+if __name__ == "__main__":
+    main()
